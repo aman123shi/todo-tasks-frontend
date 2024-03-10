@@ -1,12 +1,14 @@
 export interface TodoDto {
-  name: string;
-  id: number;
-  tasks: TaskDto[];
-  description: string;
+  name: string | any;
+  id?: any;
+  isActive: boolean;
+  tasks?: TaskDto[] | any;
+  description: string | any;
 }
 
 export interface TaskDto {
-  name: string;
-  id: number;
-  todo: number;
+  name: string | any;
+  id?: number | any;
+  todo: number | any;
+  isActive: boolean;
 }

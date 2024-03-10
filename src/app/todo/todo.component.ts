@@ -1,46 +1,8 @@
 import { Component } from '@angular/core';
 import { CreateToDoComponent } from './createTodo.component';
 import { MatDialog } from '@angular/material/dialog';
-
-export interface Todo {
-  name: string;
-  id: number;
-  tasks: number[];
-  description: string;
-}
-
-export interface Task {
-  name: string;
-  id: number;
-  todo: number[];
-}
-
-const todos: Todo[] = [
-  {
-    id: 1,
-    name: 'Search a house',
-    description: 'this is my description',
-    tasks: [1, 2, 9, 9],
-  },
-  {
-    id: 2,
-    name: 'find a car ',
-    description: 'this is my description',
-    tasks: [1, 2],
-  },
-  {
-    id: 3,
-    name: 'finalsize the house',
-    description: 'this is my description',
-    tasks: [1, 2],
-  },
-  {
-    id: 4,
-    name: 'pay the bills',
-    description: 'this is my description',
-    tasks: [1, 2],
-  },
-];
+import { TodoDto } from '../types/todo';
+import { TodoHttpService } from './todoHttp.service';
 
 @Component({
   selector: 'app-todo',
@@ -48,7 +10,13 @@ const todos: Todo[] = [
   styleUrl: './todo.component.scss',
 })
 export class TodoComponent {
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private todoHttpService: TodoHttpService
+  ) {
+    this.fetchData();
+  }
+
   displayedColumns: string[] = [
     'no',
     'name',
@@ -57,7 +25,9 @@ export class TodoComponent {
     'edit',
     'delete',
   ];
-  dataSource = todos;
+
+  todos: TodoDto[] = [];
+  dataSource = this.todos;
 
   async openQueryModal(): Promise<string> {
     const dialogRef = this.dialog.open(CreateToDoComponent, {
@@ -65,8 +35,31 @@ export class TodoComponent {
       height: '500px',
     });
 
-    const result = await dialogRef.afterClosed().toPromise();
-    console.log(result);
-    return result;
+    const { name, description } = await dialogRef.afterClosed().toPromise();
+
+    const newTodoDto: TodoDto = {
+      name,
+      description,
+      isActive: true,
+      tasks: [],
+    };
+
+    const res = await this.todoHttpService.create(newTodoDto);
+
+    this.fetchData();
+    return '';
+  }
+
+  fetchData() {
+    this.todoHttpService.getAll().then((data: TodoDto[]) => {
+      this.todos = data;
+      this.dataSource = this.todos;
+      console.log('hello p', data);
+    });
+  }
+
+  async deleteTodo(id: number) {
+    await this.todoHttpService.delete(id);
+    this.fetchData();
   }
 }

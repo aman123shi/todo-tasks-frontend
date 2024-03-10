@@ -5,7 +5,7 @@ import { TaskDto } from '../types/todo';
   providedIn: 'root',
 })
 export class TaskHttpService {
-  private baseUrl = 'https://localhost:3000/tasks';
+  private baseUrl = 'http://localhost:3000/tasks';
 
   async getAll(): Promise<TaskDto[]> {
     const response = await fetch(this.baseUrl);

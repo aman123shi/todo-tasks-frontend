@@ -8,7 +8,7 @@ export class TodoHttpService {
   private baseUrl = 'http://localhost:3000/todos';
 
   async getAll(): Promise<TodoDto[]> {
-    const response = await fetch(this.baseUrl);
+    const response = await fetch(this.baseUrl, { mode: 'cors' });
     const todos = await response.json();
     return todos as TodoDto[];
   }
